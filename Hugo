@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HugoWeb.com - Community Hub</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            --glass-bg: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shine: rgba(255, 255, 255, 0.25);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-pink: #f472b6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Forced 16:9 Landscape Aspect Ratio Container */
+        .canvas-16-9 {
+            width: 100vw;
+            height: 56.25vw; /* 16:9 Aspect Ratio */
+            max-height: 100vh;
+            max-width: 177.78vh; /* 16:9 Aspect Ratio */
+            background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(244, 114, 182, 0.15) 0%, transparent 50%),
+                        #0b0f19;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            display: grid;
+            grid-template-rows: 70px 1fr 40px;
+            overflow: hidden;
+            padding: 16px 24px;
+        }
+
+        /* 3D Glassmorphism Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow), 
+                        inset 0 1px 1px var(--glass-shine),
+                        inset 0 -1px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, #e2e8f0 70%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.1);
+            letter-spacing: -0.5px;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Liquid Glass Buttons */
+        .glass-btn {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .glass-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            color: #fff;
+        }
+
+        .glass-btn:hover::after {
+            opacity: 1;
+        }
+
+        /* Clicked/Active State Simulation */
+        .glass-btn:active, .glass-btn.active {
+            transform: translateY(1px);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                        0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-btn.accent {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(192, 132, 252, 0.25) 100%);
+            border-color: rgba(192, 132, 252, 0.4);
+        }
+        
+        .glass-btn.accent:hover {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.4) 0%, rgba(192, 132, 252, 0.4) 100%);
+            box-shadow: 0 8px 24px rgba(192, 132, 252, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Workspace split into Side Control Panel and Dynamic Glass Viewport */
+        main {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 16px;
+            padding: 12px 0;
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* Sidebar Navigation Glass Panel */
+        .glass-sidebar {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: var(--glass-shadow);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-blue);
+            margin-bottom: 6px;
+            padding-left: 8px;
+            font-weight: 700;
+        }
+
+        .side-btn {
+            justify-content: flex-start;
+            width: 100%;
+            padding: 10px 14px;
+        }
+
+        /* Content Hub */
+        .glass-content-viewport {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--glass-shadow),
+                        inset 0 20px 40px rgba(255, 255, 255, 0.02);
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Fluid 3D Liquid Accent Spheres (Motion The Agency Inspired UI) */
+        .fluid-sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: -1;
+            opacity: 0.45;
+            mix-blend-mode: screen;
+            animation: float 10s ease-in-out infinite alternate;
+        }
+
+        .sphere-1 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, var(--accent-blue) 0%, rgba(0,0,0,0) 70%);
+            top: 10%;
+            right: 15%;
+        }
+
+        .sphere-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--accent-pink) 0%, rgba(0,0,0,0) 70%);
+            bottom: -20px;
+            left: 30%;
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(-20px) scale(1.15); }
+        }
+
+        /* Interactive Sections Styling */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 750;
+            background: linear-gradient(135deg, #fff 30%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 14px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--accent-blue);
+            margin-bottom: 4px;
+        }
+
+        .card-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer glass */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            background: rgba(15, 23, 42, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Custom Scrollbar for Liquid UI */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas-16-9">
+        
+        <!-- Header Viewport -->
+        <header>
+            <div class="logo">HugoWeb.com</div>
+            <nav>
+                <button class="glass-btn active" onclick="switchTab('home')">Home</button>
+                <button class="glass-btn accent" onclick="window.open('https://youtube.com/@htmasf2k15official?si=dKOqOlOmxWfWAVW1', '_blank')">
+                    YouTube Channel ↗
+                </button>
+                <button class="glass-btn accent" onclick="window.open('https://forms.gle/VYjLq46RNym8L8456', '_blank')">
+                    Support Ticket ↗
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Dynamic Interface -->
+        <main>
+            <!-- Navigation Sidebar -->
+            <div class="glass-sidebar">
+                <div class="sidebar-title">Explore Hub</div>
+                <button class="glass-btn side-btn active" id="btn-home" onclick="switchTab('home')">🏠 Home</button>
+                <button class="glass-btn side-btn" id="btn-showcase" onclick="switchTab('showcase')">✨ Project Showcase</button>
+                <button class="glass-btn side-btn" id="btn-extras" onclick="switchTab('extras')">🎁 Extras</button>
+                <button class="glass-btn side-btn" id="btn-ugc" onclick="switchTab('ugc')">👥 Community Space</button>
+                <button class="glass-btn side-btn" id="btn-news" onclick="switchTab('news')">📰 Channel News</button>
+                <button class="glass-btn side-btn" id="btn-faq" onclick="switchTab('faq')">❓ FAQ</button>
+                <button class="glass-btn side-btn" id="btn-about" onclick="switchTab('about')">ℹ️ About Us & Bio</button>
+            </div>
+
+            <!-- Liquid Content Area -->
+            <div class="glass-content-viewport">
+                <!-- Background decorative liquid spheres -->
+                <div class="fluid-sphere sphere-1"></div>
+                <div class="fluid-sphere sphere-2"></div>
+
+                <!-- TAB: HOME -->
+                <div class="tab-content active" id="home">
+                    <h2>Welcome to the Community Hub</h2>
+                    <p>Experience the official digital terminal for the channel. This interactive space is designed with a next-generation iOS Liquid Glass aesthetic inspired by Motion The Agency, bringing realistic tactile UI mechanics straight to your web browser. Check out the channel features, news, and project details by navigating the interactive side terminal.</p>
+                    <div class="grid-cards">
+                        <div class="card">
+                            <div class="card-title">Live Updates</div>
+                            <div class="card-desc">Follow the latest announcements, video briefs, and schedule milestones.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Interactive Elements</div>
+                            <div class="card-desc">Click through any component to trigger dynamic fluid active states.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: SHOWCASE -->
+                <div class="tab-content" id="showcase">
+                    <h2>Creative Showcase</h2>
+                    <p>Explore high-fidelity renders, UI concept blueprints, and digital graphics highlights curated directly from our production suite.</p>
+                    <div class="grid-cards">
+                        <div class="card">
+                            <div class="card-title">Liquid Fluid UI</div>
+                            <div class="card-desc">An aesthetic experiment highlighting glass refraction and 3D depth layers.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Color Palettes</div>
+                            <div class="card-desc">Deep cyber purples paired with energetic liquid blue and pink accents.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: EXTRAS (No files) -->
+                <div class="tab-content" id="extras">
+                    <h2>Premium Extras</h2>
+                    <p>Enjoy exclusive interactive content, conceptual timelines, and digital reference assets stored in the browser with absolutely no local file downloads needed.</p>
+                    <div class="grid-cards">
+                        <div class="card">
+                            <div class="card-title">Asset Previews</div>
+                            <div class="card-desc">Interactive online-only layouts showcasing color codes, vectors, and stylesheets.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: USER GENERATED CONTENT (No uploads) -->
+                <div class="tab-content" id="ugc">
+                    <h2>User Generated Content</h2>
+                    <p>Browse creative works, custom fan art concepts, and feedback submissions contributed by the amazing channel community. (Online exhibition space only; no file uploads required).</p>
+                    <div class="grid-cards">
+                        <div class="card">
+                            <div class="card-title">Digital Creations</div>
+                            <div class="card-desc">Interactive concepts built inside standard web rendering sandboxes.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: NEWS -->
+                <div class="tab-content" id="news">
+                    <h2>Channel News</h2>
+                    <p>Stay up to date with core operational announcements, new system developments, and major scheduling plans directly from the creator studio.</p>
+                    <div class="grid-cards">
+                        <div class="card">
+                            <div class="card-title">Website Launch</div>
+                            <div class="card-desc">HugoWeb.com officially launches its interactive liquid glass experience interface.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: FAQ -->
+                <div class="tab-content" id="faq">
+                    <h2>Frequently Asked Questions</h2>
+                    <div class="grid-cards" style="grid-template-columns: 1fr;">
+                        <div class="card">
+                            <div class="card-title">What is HugoWeb.com?</div>
+                            <div class="card-desc" style="font-size:12px;">It is the primary interactive hub built for community engagement, showcase features, and support routing.</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">How do I file a support query?</div>
+                            <div class="card-desc" style="font-size:12px;">Use the Support Ticket link in the header navigation menu to access our official interactive intake form.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: ABOUT & BIO -->
+                <div class="tab-content" id="about">
+                    <h2>About Us & Bio</h2>
+                    <p>We craft high-end motion graphics concepts, visual systems, and digital entertainment layouts. Blending technological aesthetics with tactile user interfaces, we seek to inspire designers, video creators, and web developers around the world.</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div>&copy; 2026 HugoWeb.com. All Rights Reserved.</div>
+            <div class="footer-links">
+                <a href="#" onclick="switchTab('about')">Commercial License</a>
+                <a href="#" onclick="switchTab('about')">Privacy Policy</a>
+                <a href="#" onclick="switchTab('about')">Terms of Use</a>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all tab content
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Sho
